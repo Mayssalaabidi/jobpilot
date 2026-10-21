@@ -2,6 +2,7 @@ package com.jobpilot.backend.auth;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,5 +23,9 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public CandidatResponse registerCandidat(@Valid @RequestBody RegisterCandidatRequest request) {
         return service.registerCandidat(request);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 }

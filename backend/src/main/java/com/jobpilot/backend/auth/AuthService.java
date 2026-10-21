@@ -3,6 +3,7 @@ package com.jobpilot.backend.auth;
 import com.jobpilot.backend.candidat.Candidat;
 import com.jobpilot.backend.candidat.CandidatRepository;
 import com.jobpilot.backend.exception.EmailAlreadyUsedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,5 +34,16 @@ public class AuthService {
                 req.niveau());
 
         return CandidatResponse.from(candidats.save(candidat));
+    }
+    public LoginResponse login(LoginRequest req) {
+        Candidat c = candidatRepository.findByEmailIgnoreCase(req.email())
+                .orElseThrow(() -> new BadCredentialsException("Email ou mot de passe incorrect"));
+
+        if (!passwordEncoder.matches(req.password(), c.getPassword())) {
+            throw new BadCredentialsException("Email ou mot de passe incorrect");
+        }
+
+        String token = jwtService.generateToken(c.getEmail(), "CANDIDAT");
+        return new LoginResponse(token, "CANDIDAT", c.getNom(), c.getPrenom());
     }
 }
